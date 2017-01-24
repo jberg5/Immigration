@@ -3,6 +3,7 @@ import csv
 import math
 from country_test import Region
 from plot import Plot
+from pyshp import shapefile
 
 def mercator(lat):
     """project latitude 'lat' according to Mercator"""
@@ -28,36 +29,33 @@ def main(results, boundaries, output, width, style):
             new_points.append((float(coords[i]), mercator(float(coords[i+1]))))
         return new_points
 
-    with open(boundaries, 'r') as bnd, open(results, 'r') as elc:
-        election = csv.reader(elc)
-        boundary = csv.reader(bnd)
 
-        regions = []
-        for (co, st, r, d, o), boundary in zip(election, boundary):
-            regions.append(Region(to_point(boundary), int(r), int(d), int(o)))
+    sf = shapefile.Reader('ne_10m_admin_0_countries.shp')
+    shapes = sf.shapes()
+    regions = [Region(shapes[i].points) for i in range(len(shapes))]
 
-        max_longs = [region.max_long() for region in regions]
-        min_longs = [region.min_long() for region in regions]
-        max_lats = [region.max_lat() for region in regions]
-        min_lats = [region.min_lat() for region in regions]
+    max_longs = [region.max_long() for region in regions]
+    min_longs = [region.min_long() for region in regions]
+    max_lats = [region.max_lat() for region in regions]
+    min_lats = [region.min_lat() for region in regions]
 
-        max_long = max(max_longs)
-        max_lat = max(max_lats)
-        min_long = min(min_longs)
-        min_lat = min(min_lats)
+    max_long = max(max_longs)
+    max_lat = max(max_lats)
+    min_long = min(min_longs)
+    min_lat = min(min_lats)
 
-        America = Plot(width, min_long, min_lat, max_long, max_lat)
-        for region in regions:
-            America.draw(region, style)
-        America.save(output)
+    America = Plot(width, min_long, min_lat, max_long, max_lat)
+    for region in regions:
+        America.draw(region, style)
+    America.save(output)
 
 
 
 
 if __name__ == '__main__':
-    results = sys.argv[1]
-    boundaries = sys.argv[2]
-    output = sys.argv[3]
-    width = int(sys.argv[4])
-    style = sys.argv[5]
+    results = None
+    boundaries = None
+    output = sys.argv[1]
+    width = int(sys.argv[2])
+    style = sys.argv[3]
     main(results, boundaries, output, width, style)

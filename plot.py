@@ -1,9 +1,8 @@
 from PIL import Image, ImageDraw
 from PIL.ImageColor import getrgb
-
+import random
 
 class Plot:
-
     """
     Provides the ability to map, draw and color regions in a long/lat
     bounding box onto a proportionally scaled image.
@@ -40,27 +39,16 @@ class Plot:
     @staticmethod
     def solid(region):
         """
-        a solid color based on a region's plurality of votes
-        Args:
-            region (Region): a region object
-        Yields:
-            (int, int, int): a triple (RGB values between 0 and 255)
+        Returns a useless solid color.
         """
-
         return getrgb('GREEN')
-
 
     @staticmethod
     def gradient(region):
         """
-        a gradient color based on percentages of votes in a region
-        Args:
-            region (Region): a region object
-        Yields:
-            (int, int, int): a triple (RGB values between 0 and 255)
+        Returns a random color.
         """
-
-        return (math.randint(1,255),math.randint(1,255),math.randint(1,255))
+        return (random.randint(1,180),random.randint(50,200),random.randint(100,255))
 
     def __init__(self, width, min_long, min_lat, max_long, max_lat):
         """
